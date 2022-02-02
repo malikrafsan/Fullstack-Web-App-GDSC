@@ -21,6 +21,14 @@ app.get("/", async (req, res) => {
   res.send(error ? error : data);
 });
 
+app.get("/:id", async (req, res) => {
+  const { data, error } = await supabase.from("movie").select(`
+    *
+  `).match({ id: req.params.id });
+
+  res.send(error ? error : data);
+});
+
 app.post("/login", async (req, res) => {
   const { data, error } = await supabase
     .from("user")
@@ -69,6 +77,23 @@ app.post("/register", async (req, res) => {
       res.status(200).send(data);
     }
   }
+});
+
+app.get("/getwishlist", async (req, res) => {
+  const wishlists = await supabase
+    .from("wishlist")
+    .select(`movie_id`)
+    .eq("user_id", req.body?.user_id);
+
+  if (wishlists.error) {
+    res.status(500).send(error);
+  }
+
+  const wishlist = wishlists.data[0].movie_id;
+  const { data, error } = await supabase.from("movie").select(`*`);
+  const datafiltered = data.filter((datum) => wishlist.includes(datum.id));
+
+  res.send(datafiltered);
 });
 
 app.patch("/updatewishlist", async (req, res) => {
