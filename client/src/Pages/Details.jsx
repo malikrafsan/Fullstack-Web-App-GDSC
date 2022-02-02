@@ -17,13 +17,13 @@ function Details() {
                     <img src = {movieItem.poster.default}></img>
                 </div>
                 <div className={styles.desc}>
-                    <h3>Description: </h3>
+                    <h5>Description: </h5>
                     <p>{movieItem.desc}</p>
-                    <h3>Year : {movieItem.tahun}</h3>
-                    <h3>Genre : {movieItem.genre}</h3>
-                    <h3>Rating : {movieItem.rating}</h3>
-                    <h3>Duration : {movieItem.duration} minutes</h3>
-                    <h3>Directed by {movieItem.director}</h3>
+                    <h5>Year : {movieItem.tahun}</h5>
+                    <h5>Genre : {movieItem.genre}</h5>
+                    <h5>Rating : {movieItem.rating}</h5>
+                    <h5>Duration : {movieItem.duration} minutes</h5>
+                    <h5>Directed by {movieItem.director}</h5>
                     <Link to="/" className={styles.link}>BACK TO HOME</Link>
                 </div>
             </div>
