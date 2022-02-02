@@ -22,9 +22,14 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/:id", async (req, res) => {
-  const { data, error } = await supabase.from("movie").select(`
+  const { data, error } = await supabase
+    .from("movie")
+    .select(
+      `
     *
-  `).match({ id: req.params.id });
+  `
+    )
+    .match({ id: req.params.id });
 
   res.send(error ? error : data);
 });
@@ -62,6 +67,10 @@ app.post("/register", async (req, res) => {
     .from("user")
     .select("username")
     .eq("username", req.body?.username);
+
+  if (error) {
+    res.send(error);
+  }
 
   if (data.length > 0) {
     res.status(403).send("Username already exists");
@@ -105,9 +114,11 @@ app.patch("/updatewishlist", async (req, res) => {
 
   const { data, error } = await supabase
     .from("wishlist")
-    .select(`
+    .select(
+      `
     user_id, movie_id
-  `)
+  `
+    )
     .eq("user_id", user_id);
 
   if (error) {
@@ -129,10 +140,8 @@ app.patch("/updatewishlist", async (req, res) => {
     }
   } else {
     const { data2, error2 } = await supabase
-    .from('wishlist')
-    .insert([
-      { user_id: user_id, movie_id: [movie_id] },
-    ])
+      .from("wishlist")
+      .insert([{ user_id: user_id, movie_id: [movie_id] }]);
     if (error2) {
       res.status(500).send(error2);
     } else {
@@ -150,9 +159,11 @@ app.delete("/deletewishlist", async (req, res) => {
 
   const { data, error } = await supabase
     .from("wishlist")
-    .select(`
+    .select(
+      `
     user_id, movie_id
-  `)
+  `
+    )
     .eq("user_id", user_id);
 
   if (error) {
