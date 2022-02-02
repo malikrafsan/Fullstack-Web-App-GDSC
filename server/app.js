@@ -36,7 +36,7 @@ app.post("/login", async (req, res) => {
     res.status(500).send(error);
   }
 
-  if (data !== []) {
+  if (data.length > 0) {
     res.sendStatus(200);
   } else {
     res.sendStatus(403);
@@ -68,6 +68,87 @@ app.post("/register", async (req, res) => {
     } else {
       res.status(200).send(data);
     }
+  }
+});
+
+app.patch("/updatewishlist", async (req, res) => {
+  const { user_id, movie_id } = req.body;
+
+  if (!user_id || !movie_id) {
+    res.status(404).send("Missing username or movie_id");
+  }
+
+  const { data, error } = await supabase
+    .from("wishlist")
+    .select(`
+    user_id, movie_id
+  `)
+    .eq("user_id", user_id);
+
+  if (error) {
+    res.status(500).send(error);
+  }
+
+  if (data.length > 0) {
+    const { data1, error1 } = await supabase
+      .from("wishlist")
+      .update({
+        movie_id: [...data[0].movie_id, movie_id],
+      })
+      .eq("user_id", user_id);
+
+    if (error1) {
+      res.status(500).send(error1);
+    } else {
+      res.status(200).send(data1);
+    }
+  } else {
+    const { data2, error2 } = await supabase
+    .from('wishlist')
+    .insert([
+      { user_id: user_id, movie_id: [movie_id] },
+    ])
+    if (error2) {
+      res.status(500).send(error2);
+    } else {
+      res.status(200).send(data2);
+    }
+  }
+});
+
+app.delete("/deletewishlist", async (req, res) => {
+  const { user_id, movie_id } = req.body;
+
+  if (!user_id || !movie_id) {
+    res.status(404).send("Missing username or movie_id");
+  }
+
+  const { data, error } = await supabase
+    .from("wishlist")
+    .select(`
+    user_id, movie_id
+  `)
+    .eq("user_id", user_id);
+
+  if (error) {
+    res.status(500).send(error);
+  }
+
+  if (data.length > 0) {
+    const { data1, error1 } = await supabase
+      .from("wishlist")
+      .update({
+        movie_id: data[0].movie_id.filter((id) => id !== movie_id),
+      })
+      .eq("user_id", user_id);
+
+    if (error1) {
+      res.status(500).send(error1);
+    } else {
+      res.status(200).send(data1);
+    }
+  } else {
+    res.status(404).send("No movie in wishlist");
   }
 });
 
