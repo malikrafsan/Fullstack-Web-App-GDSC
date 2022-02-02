@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Quicksand:wght@400;500;600&display=swap');
+
+.body{
+    background-color: #1A494F;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    font-family: "Quicksand", sans-serif;
+}
+
+.containerLeft{
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.title{
+    /* background-color: rosybrown; */
+    height: 12vh;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+}
+
+.content {
+    /* background-color: gainsboro; */
+    width: 80%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.movieImg{
+    width: 250px;
+    height: 280px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.movieImg img{
+    max-width: 100%;
+    max-height: 280px;
+}
+
+.movieItem{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    height: 450px;
+    background-color: #e9ecf3;
+    margin: 20px;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.movieItem .movieTitle,
+.movieItem .movieDesc{
+    margin-top: 12px;
+    margin-bottom: 0px;
+}
+
+.movie-desc{
+    max-width: 250px;
+}
+
+.movie-title{
+    font-size: large;
+    color: #1A494F;
+}
+
+.containerRight{
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    border-left: 3px solid #000;
+}
+
+.wishItem{
+    width: 100%;
+    background-color: #e9ecf3;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+.btn{
+    background-color: #1A494F;
+    color: #fff;
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: none;
+}
+
+.link {
+    color: #000;
+}
+
+.link:hover{
+    color: #1A494F;
+}
