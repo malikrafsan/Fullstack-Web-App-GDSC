@@ -33,7 +33,6 @@ app.get("/", async (req, res) => {
     *
   `);
 
-  console.log(data);
   res.send(error ? error : data);
 });
 
@@ -52,7 +51,6 @@ app.get("/:id", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body.data;
-  console.log(username, password);
 
   if (!username || !password) {
     res.status(404).send("Missing username or password");
@@ -70,8 +68,6 @@ app.post("/login", async (req, res) => {
     return;
   }
 
-  console.log(data);
-
   if (data.length > 0) {
     res.status(200).send(data);
   } else {
@@ -81,7 +77,6 @@ app.post("/login", async (req, res) => {
 
 app.post("/register", async (req, res) => {
   const { username, password } = req.body.data;
-  console.log(username, password);
 
   if (!username || !password) {
     res.status(404).send("Missing username or password");
@@ -115,33 +110,36 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/getwishlist", async (req, res) => {
+app.post("/getwishlist", async (req, res) => {
   const wishlists = await supabase
     .from("wishlist")
     .select(`movie_id`)
-    .eq("user_id", req.body?.user_id);
+    .eq("user_id", req.body.data.user_id);
 
   if (wishlists.error) {
-    res.status(500).send(error);
+    res.status(500).send(wishlists.error);
     return;
   }
 
-  const wishlist = wishlists.data[0].movie_id;
-  const { data, error } = await supabase.from("movie").select(`*`);
-  const datafiltered = data.filter((datum) => wishlist.includes(datum.id));
-
-  res.send(datafiltered);
+  if (wishlists.data.length > 0) {
+    const wishlist = wishlists.data[0].movie_id;
+    const { data, error } = await supabase.from("movie").select(`*`);
+    const datafiltered = data.filter((datum) => wishlist.includes(datum.id));
+    res.send(datafiltered);
+  } else {
+    res.send([])
+  }
 });
 
 app.patch("/updatewishlist", async (req, res) => {
-  const { user_id, movie_id } = req.body;
+  const { user_id, movie_id } = req.body.data;
 
   if (!user_id || !movie_id) {
     res.status(404).send("Missing username or movie_id");
     return;
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("wishlist")
     .select(
       `
@@ -154,28 +152,34 @@ app.patch("/updatewishlist", async (req, res) => {
     res.status(500).send(error);
     return;
   }
+  
+  let new_movie_id = data[0].movie_id;
 
   if (data.length > 0) {
-    const { data1, error1 } = await supabase
+    if (data[0].movie_id.includes(movie_id)) {
+      res.status(200);
+    } else {
+      let { data, error } = await supabase
       .from("wishlist")
       .update({
-        movie_id: [...data[0].movie_id, movie_id],
+        movie_id: [...new_movie_id, movie_id],
       })
       .eq("user_id", user_id);
-
-    if (error1) {
-      res.status(500).send(error1);
-    } else {
-      res.status(200).send(data1);
+      
+      if (error) {
+        res.status(500).send(error);
+      } else {
+        res.status(200).send(data);
+      }
     }
   } else {
-    const { data2, error2 } = await supabase
+    let { data, error } = await supabase
       .from("wishlist")
       .insert([{ user_id: user_id, movie_id: [movie_id] }]);
-    if (error2) {
-      res.status(500).send(error2);
+    if (error) {
+      res.status(500).send(error);
     } else {
-      res.status(200).send(data2);
+      res.status(200).send(data);
     }
   }
 });
@@ -188,7 +192,7 @@ app.delete("/deletewishlist", async (req, res) => {
     return;
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("wishlist")
     .select(
       `
@@ -202,18 +206,20 @@ app.delete("/deletewishlist", async (req, res) => {
     return;
   }
 
+  let new_movie_id = data[0].movie_id;
+
   if (data.length > 0) {
-    const { data1, error1 } = await supabase
+    let { data, error } = await supabase
       .from("wishlist")
       .update({
-        movie_id: data[0].movie_id.filter((id) => id !== movie_id),
+        movie_id: new_movie_id.filter((id) => id !== movie_id),
       })
       .eq("user_id", user_id);
 
-    if (error1) {
-      res.status(500).send(error1);
+    if (error) {
+      res.status(500).send(error);
     } else {
-      res.status(200).send(data1);
+      res.status(200).send(data);
     }
   } else {
     res.status(404).send("No movie in wishlist");
