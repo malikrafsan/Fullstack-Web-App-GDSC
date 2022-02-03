@@ -2,6 +2,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from 'axios';
 
 const LoginModal = (props) => {
   const [username, setUsername] = useState("");
@@ -13,28 +14,35 @@ const LoginModal = (props) => {
     changePurpose: "",
   });
 
-  const handleLogin = (onhide) => {
+  const handleLogin = async (onhide) => {
     console.log(username, password);
+    try {
+      const res = await axios.post(`http://localhost:5000/${purpose === "LOGIN" ? 'login' : 'register'}`, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+        credentials: 'same-origin',
+        crossdomain: true,
+        data: {
+          username,
+          password,
+        }
+      })
+      console.log(res);
+      const { data } = res;
+      localStorage.setItem("credentials", data[0].id);
+      onhide();
+    } catch (err) {
+      console.log(err);
+      alert(err);
+    }
     setUsername("");
     setPassword("");
-
-    const data = {
-      success: true,
-      error: null,
-      credentials: 1,
-    };
-    // const data = {
-    //   success: false,
-    //   error: "Username or password is incorrect",
-    //   credentials: null,
-    // }
-
-    if (data.success) {
-      localStorage.setItem("credentials", data.credentials);
-      onhide();
-    } else {
-      alert(data.error);
-    }
   };
 
   const handleChangePurpose = () => {

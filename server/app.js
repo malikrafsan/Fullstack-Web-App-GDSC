@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-const port = 3000;
+const port = 5000;
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -11,6 +11,22 @@ const { createClient } = require("@supabase/supabase-js");
 const supabaseUrl = "https://ickjmznffvkgvbiylfrx.supabase.co";
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+const cors = require("cors");
+const corsConfig = {
+  credentials: true,
+  origin: true,
+};
+app.use(cors(corsConfig));
+
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 app.get("/", async (req, res) => {
   const { data, error } = await supabase.from("movie").select(`
@@ -35,49 +51,60 @@ app.get("/:id", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
+  const { username, password } = req.body.data;
+  console.log(username, password);
+
+  if (!username || !password) {
+    res.status(404).send("Missing username or password");
+    return;
+  }
+
   const { data, error } = await supabase
     .from("user")
-    .select(
-      `
-    username, password
-  `
-    )
-    .eq("username", req.body?.username)
-    .eq("password", req.body?.password);
+    .select(`*`)
+    .eq("username", username)
+    .eq("password", password);
 
   if (error) {
     res.status(500).send(error);
+    return;
   }
 
+  console.log(data);
+
   if (data.length > 0) {
-    res.sendStatus(200);
+    res.status(200).send(data);
   } else {
-    res.sendStatus(403);
+    res.status(403).send("Username or password is incorrect");
   }
 });
 
 app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body.data;
+  console.log(username, password);
 
   if (!username || !password) {
     res.status(404).send("Missing username or password");
+    return;
   }
 
   const { data, error } = await supabase
     .from("user")
     .select("username")
-    .eq("username", req.body?.username);
+    .eq("username", username);
 
   if (error) {
+    console.log(error);
     res.send(error);
+    return;
   }
 
   if (data.length > 0) {
     res.status(403).send("Username already exists");
   } else {
     const { data, error } = await supabase.from("user").insert({
-      username: req.body?.username,
-      password: req.body?.password,
+      username,
+      password,
     });
 
     if (error) {
@@ -96,6 +123,7 @@ app.get("/getwishlist", async (req, res) => {
 
   if (wishlists.error) {
     res.status(500).send(error);
+    return;
   }
 
   const wishlist = wishlists.data[0].movie_id;
@@ -110,6 +138,7 @@ app.patch("/updatewishlist", async (req, res) => {
 
   if (!user_id || !movie_id) {
     res.status(404).send("Missing username or movie_id");
+    return;
   }
 
   const { data, error } = await supabase
@@ -123,6 +152,7 @@ app.patch("/updatewishlist", async (req, res) => {
 
   if (error) {
     res.status(500).send(error);
+    return;
   }
 
   if (data.length > 0) {
@@ -155,6 +185,7 @@ app.delete("/deletewishlist", async (req, res) => {
 
   if (!user_id || !movie_id) {
     res.status(404).send("Missing username or movie_id");
+    return;
   }
 
   const { data, error } = await supabase
@@ -168,6 +199,7 @@ app.delete("/deletewishlist", async (req, res) => {
 
   if (error) {
     res.status(500).send(error);
+    return;
   }
 
   if (data.length > 0) {

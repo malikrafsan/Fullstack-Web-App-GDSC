@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./home.module.css";
-import MovieData from "../public/MovieData";
+// import MovieData from "../public/MovieData";
 import { MdDelete } from "react-icons/md";
 import CredModal from "../components/CredModal";
+import axios from "axios";
 
 function Home() {
   const [wishlist, setWishlist] = useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [hasCredentials, setHasCredentials] = useState(false);
+  const [MovieData, setMovieData] = useState([]);
 
   const handleClick = (item) => {
     if (!hasCredentials) {
@@ -36,6 +38,27 @@ function Home() {
     }
   }, [modalShow])
 
+  useEffect(async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/`, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+        credentials: 'same-origin',
+        crossdomain: true,
+      })
+      console.log(res);
+      setMovieData(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [])
+
   return (
     <div className={styles.body}>
       <CredModal 
@@ -54,10 +77,10 @@ function Home() {
               return (
                 <div key={item.id} className={styles.movieItem}>
                   <div className={styles.movieImg}>
-                    <img src={item.poster.default} />
+                    <img src={item.movie_pict} />
                   </div>
-                  <h5 className={styles.movieTitle}>{item.nama}</h5>
-                  <p className={styles.movieDesc}>{item.desc.slice(0, 60)}..</p>
+                  <h5 className={styles.movieTitle}>{item.movie_title}</h5>
+                  <p className={styles.movieDesc}>{item.movie_desc.slice(0, 60)}..</p>
                   <Link to={{ pathname: `/${id}` }} className={styles.link}>
                     See Details
                   </Link>
@@ -79,7 +102,7 @@ function Home() {
         {wishlist.map((item) => {
           return (
             <div key={item.id} className={styles.wishItem}>
-              <h4>{item.nama}</h4>
+              <h4>{item.movie_title}</h4>
               <button onClick={() => handleDelete(item)} className={styles.btn}>
                 <MdDelete />
               </button>
