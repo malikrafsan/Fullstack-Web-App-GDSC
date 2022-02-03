@@ -38,25 +38,28 @@ function Home() {
     }
   }, [modalShow])
 
-  useEffect(async () => {
-    try {
-      const res = await axios.get(`http://localhost:5000/`, {
-        method: 'HEAD',
-        mode: 'no-cors',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-        credentials: 'same-origin',
-        crossdomain: true,
-      })
-      console.log(res);
-      setMovieData(res.data);
-    } catch (err) {
-      console.log(err);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await axios.get(`http://localhost:5000/`, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true,
+          credentials: 'same-origin',
+          crossdomain: true,
+        })
+        // console.log(res);
+        setMovieData(res.data);
+      } catch (err) {
+        console.log(err);
+      }
     }
+    fetchData();
   }, [])
 
   return (
@@ -77,7 +80,7 @@ function Home() {
               return (
                 <div key={item.id} className={styles.movieItem}>
                   <div className={styles.movieImg}>
-                    <img src={item.movie_pict} />
+                    <img alt="movie poster" src={item.movie_pict} />
                   </div>
                   <h5 className={styles.movieTitle}>{item.movie_title}</h5>
                   <p className={styles.movieDesc}>{item.movie_desc.slice(0, 60)}..</p>
