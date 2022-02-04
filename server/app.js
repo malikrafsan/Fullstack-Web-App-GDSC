@@ -153,9 +153,8 @@ app.patch("/updatewishlist", async (req, res) => {
     return;
   }
   
-  let new_movie_id = data[0].movie_id;
-
   if (data.length > 0) {
+    let new_movie_id = data[0].movie_id;
     if (data[0].movie_id.includes(movie_id)) {
       res.status(200);
     } else {

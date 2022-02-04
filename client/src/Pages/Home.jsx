@@ -118,7 +118,10 @@ function Home() {
   
   useEffect(async () => {
     await fetchData();
-    await fetchDataWishlist();
+    const credentials = localStorage.getItem("credentials");
+    if (credentials) {
+      await fetchDataWishlist();
+    }
   }, [])
 
   return (

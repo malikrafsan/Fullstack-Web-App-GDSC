@@ -60,14 +60,14 @@ const LoginModal = (props) => {
     switch (purpose) {
       case "LOGIN":
         setModalText({
-          title: "Login Modal",
+          title: "Login",
           buttonText: "Login",
           changePurpose: "Don't have an account?",       
         })
         break;
       case "REGISTER":
         setModalText({
-          title: "Register Modal",
+          title: "Register",
           buttonText: "Register",
           changePurpose: "Already have an account?",      
         })
