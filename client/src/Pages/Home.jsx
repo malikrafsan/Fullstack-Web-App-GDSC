@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./home.module.css";
-// import MovieData from "../public/MovieData";
 import { MdDelete } from "react-icons/md";
 import CredModal from "../components/CredModal";
 import axios from "axios";
